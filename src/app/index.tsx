@@ -1,9 +1,11 @@
+import { useRouter } from "expo-router";
 import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PetImagePlaceholder } from "../components/PetImagePlaceholder";
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   return (
     <View
@@ -35,9 +37,7 @@ export default function HomeScreen() {
           <View className="mt-auto pt-8">
             <Pressable
               accessibilityRole="button"
-              onPress={() =>
-                Alert.alert("Coming soon", "We're building your matching quiz.")
-              }
+              onPress={() => router.push("/quiz")}
               className="h-14 items-center justify-center rounded-2xl bg-primary"
             >
               <Text className="font-bodySemibold text-base text-white">
