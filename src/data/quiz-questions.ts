@@ -3,7 +3,10 @@ import type { QuizQuestion } from "@/types/quiz";
 export const quizQuestions: QuizQuestion[] = [
   {
     id: "housing",
+    criterionId: "housingType",
     question: "Де ти живеш?",
+    answerType: "single_select",
+    allowUnknown: true,
     options: [
       { label: "У квартирі", value: "apartment" },
       { label: "У приватному будинку", value: "house" },
@@ -11,8 +14,11 @@ export const quizQuestions: QuizQuestion[] = [
   },
   {
     id: "daily_care",
+    criterionId: "availableCareTime",
     question:
       "Скільки часу ти готовий приділяти щоденному догляду за твариною?",
+    answerType: "single_select",
+    allowUnknown: true,
     options: [
       { label: "До 30 хвилин на день", value: "under_30_minutes" },
       { label: "Від 30 хвилин до 2 годин на день", value: "30_min_to_2_hours" },
@@ -21,7 +27,10 @@ export const quizQuestions: QuizQuestion[] = [
   },
   {
     id: "social_interaction",
+    criterionId: "desiredInteraction",
     question: "Скільки взаємодії з твариною ти хочеш у повсякденному житті?",
+    answerType: "single_select",
+    allowUnknown: true,
     options: [
       {
         label: "Переважно спостерігати, без постійного контакту",
@@ -36,8 +45,16 @@ export const quizQuestions: QuizQuestion[] = [
   },
   {
     id: "finance",
+    criterionId: "monthlyBudget",
     question:
       "Яку суму ти можеш регулярно виділяти на щоденне утримання тварини щомісяця?",
+    answerType: "single_select",
+    allowUnknown: true,
+    customInput: {
+      type: "number",
+      min: 0,
+      unit: "грн",
+    },
     options: [
       {
         label: "До 500 грн",
@@ -68,7 +85,10 @@ export const quizQuestions: QuizQuestion[] = [
   },
   {
     id: "absence_care",
+    criterionId: "dailyAbsence",
     question: "Як часто тебе не буває вдома протягом дня?",
+    answerType: "single_select",
+    allowUnknown: true,
     options: [
       {
         label: "Зазвичай я вдома або ненадовго виходжу",
@@ -83,8 +103,11 @@ export const quizQuestions: QuizQuestion[] = [
   },
   {
     id: "preparation",
+    criterionId: "preparationReadiness",
     question:
       "Чи готовий ти заздалегідь підготувати житло та необхідні умови для тварини?",
+    answerType: "single_select",
+    allowUnknown: true,
     options: [
       {
         label: "Так, готовий усе необхідне підготувати",
@@ -106,7 +129,10 @@ export const quizQuestions: QuizQuestion[] = [
   },
   {
     id: "activity",
+    criterionId: "desiredActivity",
     question: "Який рівень активності тобі найбільше підходить?",
+    answerType: "single_select",
+    allowUnknown: true,
     options: [
       {
         label: "Спокійний спосіб життя, без особливих активностей",

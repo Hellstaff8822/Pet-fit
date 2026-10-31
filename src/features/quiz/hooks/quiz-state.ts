@@ -17,8 +17,30 @@ export const useQuizState = () => {
     setAnswers((prevAnswers) => {
       return {
         ...prevAnswers,
-        [questionId]: answerValue,
+        [questionId]: { type: "option", value: answerValue },
       };
+    });
+  };
+
+  const updateCustomNumberAnswer = (questionId: string, value: number) => {
+    setAnswers((prevAnswers) => ({
+      ...prevAnswers,
+      [questionId]: { type: "custom_number", value },
+    }));
+  };
+
+  const markAnswerUnknown = (questionId: string) => {
+    setAnswers((prevAnswers) => ({
+      ...prevAnswers,
+      [questionId]: { type: "unknown" },
+    }));
+  };
+
+  const clearAnswer = (questionId: string) => {
+    setAnswers((prevAnswers) => {
+      const nextAnswers = { ...prevAnswers };
+      delete nextAnswers[questionId];
+      return nextAnswers;
     });
   };
 
@@ -42,6 +64,9 @@ export const useQuizState = () => {
   return {
     answers,
     updateAnswer,
+    updateCustomNumberAnswer,
+    markAnswerUnknown,
+    clearAnswer,
     resetAnswers,
     nextQuestion,
     previousQuestion,

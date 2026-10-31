@@ -1,6 +1,15 @@
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { useState } from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { quizQuestions } from "@/data/quiz-questions";
 import { useQuizState } from "@/features/quiz/hooks/quiz-state";
 
@@ -10,6 +19,9 @@ const Quiz = () => {
   const {
     answers,
     updateAnswer,
+    updateCustomNumberAnswer,
+    markAnswerUnknown,
+    clearAnswer,
     resetAnswers,
     nextQuestion,
     previousQuestion,
@@ -20,9 +32,70 @@ const Quiz = () => {
     allQuestionsAnswered,
   } = useQuizState();
 
+  const [customBudgetText, setCustomBudgetText] = useState(() => {
+    const savedBudget = answers.finance;
+    return savedBudget?.type === "custom_number"
+      ? String(savedBudget.value)
+      : "";
+  });
+  const [customBudgetSelected, setCustomBudgetSelected] = useState(
+    () => answers.finance?.type === "custom_number",
+  );
+
   const questionCount = quizQuestions.length;
+  const savedAnswer = answers[currentQuestion.id];
+  const customInput = currentQuestion.customInput;
   const progress = ((currentQuestionIndex + 1) / questionCount) * 100;
-  const canContinue = hasAnsweredCurrentQuestion && (!isLastQuestion || allQuestionsAnswered);
+  const canContinue =
+    hasAnsweredCurrentQuestion && (!isLastQuestion || allQuestionsAnswered);
+
+  const handleOptionPress = (optionValue: string) => {
+    if (optionValue === "custom_amount" && customInput?.type === "number") {
+      setCustomBudgetSelected(true);
+      if (savedAnswer?.type === "custom_number") {
+        setCustomBudgetText(String(savedAnswer.value));
+      } else {
+        setCustomBudgetText("");
+        clearAnswer(currentQuestion.id);
+      }
+      return;
+    }
+
+    if (currentQuestion.criterionId === "monthlyBudget") {
+      setCustomBudgetSelected(false);
+      setCustomBudgetText("");
+    }
+    updateAnswer(currentQuestion.id, optionValue);
+  };
+
+  const handleCustomBudgetChange = (text: string) => {
+    setCustomBudgetText(text);
+    const normalizedText = text.trim();
+
+    if (!/^\d+$/.test(normalizedText)) {
+      clearAnswer(currentQuestion.id);
+      return;
+    }
+
+    const value = Number(normalizedText);
+    if (
+      !Number.isSafeInteger(value) ||
+      value < (customInput?.min ?? 0)
+    ) {
+      clearAnswer(currentQuestion.id);
+      return;
+    }
+
+    updateCustomNumberAnswer(currentQuestion.id, value);
+  };
+
+  const handleSkip = () => {
+    if (currentQuestion.criterionId === "monthlyBudget") {
+      setCustomBudgetSelected(false);
+      setCustomBudgetText("");
+    }
+    markAnswerUnknown(currentQuestion.id);
+  };
 
   const handleContinue = () => {
     if (!canContinue) return;
@@ -38,12 +111,17 @@ const Quiz = () => {
 
   return (
     <View className="flex-1 bg-cream" style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
-      <ScrollView
+      <KeyboardAvoidingView
         className="flex-1"
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={insets.top}
       >
-        <View className="flex-1 px-6 pb-6 pt-5">
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View className="flex-1 px-6 pb-6 pt-5">
           <View className="mb-8 flex-row items-center justify-between">
             <Text className="font-bodyBold text-xl text-primaryDark">petfit.</Text>
             <Text className="font-bodyMedium text-sm text-textSecondary">
@@ -66,14 +144,18 @@ const Quiz = () => {
 
           <View className="gap-3">
             {currentQuestion.options.map((option) => {
-              const isSelected = answers[currentQuestion.id] === option.value;
+              const isSelected =
+                option.value === "custom_amount"
+                  ? customBudgetSelected
+                  : savedAnswer?.type === "option" &&
+                    savedAnswer.value === option.value;
 
               return (
                 <Pressable
                   key={option.value}
                   accessibilityRole="radio"
                   accessibilityState={{ checked: isSelected }}
-                  onPress={() => updateAnswer(currentQuestion.id, option.value)}
+                  onPress={() => handleOptionPress(option.value)}
                   className={`min-h-[60px] flex-row items-center rounded-2xl border px-4 py-4 ${
                     isSelected ? "border-primary bg-primarySoft" : "border-border bg-surface"
                   }`}
@@ -90,6 +172,49 @@ const Quiz = () => {
               );
             })}
           </View>
+
+          {customBudgetSelected && customInput?.type === "number" ? (
+            <View className="mt-5">
+              <Text className="mb-2 font-bodySemibold text-sm text-text">
+                Твій бюджет на місяць ({customInput.unit})
+              </Text>
+              <TextInput
+                accessibilityLabel={`Твій бюджет на місяць у ${customInput.unit}`}
+                keyboardType="number-pad"
+                value={customBudgetText}
+                onChangeText={handleCustomBudgetChange}
+                placeholder={`Введи суму від ${customInput.min}`}
+                returnKeyType="done"
+                className="min-h-[56px] rounded-2xl border border-border bg-surface px-4 font-body text-base text-text placeholder:text-textMuted"
+              />
+              {!hasAnsweredCurrentQuestion ? (
+                <Text accessibilityRole="alert" className="mt-2 font-body text-sm text-error">
+                  Введи ціле невід’ємне число, щоб продовжити.
+                </Text>
+              ) : null}
+            </View>
+          ) : null}
+
+          {currentQuestion.allowUnknown ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ selected: savedAnswer?.type === "unknown" }}
+              onPress={handleSkip}
+              className={`mt-4 min-h-11 items-center justify-center rounded-xl ${
+                savedAnswer?.type === "unknown" ? "bg-primarySoft" : ""
+              }`}
+            >
+              <Text
+                className={`font-bodySemibold text-sm ${
+                  savedAnswer?.type === "unknown"
+                    ? "text-primaryDark"
+                    : "text-textSecondary"
+                }`}
+              >
+                Не знаю / Пропустити
+              </Text>
+            </Pressable>
+          ) : null}
 
           <View className="mt-auto flex-row gap-3 pt-8">
             <Pressable
@@ -120,8 +245,9 @@ const Quiz = () => {
               }`}>{isLastQuestion ? "Завершити" : "Далі"}</Text>
             </Pressable>
           </View>
-        </View>
-      </ScrollView>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 };
