@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -6,6 +5,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
 
 import { DMSerifDisplay_400Regular } from "@expo-google-fonts/dm-serif-display";
+import { QuizSessionProvider } from "@/features/quiz/context/quiz-session-context";
 
 import {
   Inter_400Regular,
@@ -27,9 +27,9 @@ export default function RootLayout() {
     Inter_700Bold,
   });
   console.log("PetFit fonts:", {
-  fontsLoaded,
-  fontError,
-});
+    fontsLoaded,
+    fontError,
+  });
 
   useEffect(() => {
     if (fontsLoaded || fontError) {
@@ -44,12 +44,13 @@ export default function RootLayout() {
   return (
     <>
       <StatusBar style="dark" />
-
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-      />
+      <QuizSessionProvider>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+          }}
+        />
+      </QuizSessionProvider>
     </>
   );
 }
