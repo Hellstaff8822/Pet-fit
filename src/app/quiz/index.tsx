@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+﻿import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useState } from "react";
 import {
@@ -22,7 +22,6 @@ const Quiz = () => {
     updateCustomNumberAnswer,
     markAnswerUnknown,
     clearAnswer,
-    resetAnswers,
     nextQuestion,
     previousQuestion,
     currentQuestionIndex,
@@ -101,7 +100,6 @@ const Quiz = () => {
     if (!canContinue) return;
 
     if (isLastQuestion) {
-      resetAnswers();
       router.replace("/quiz/results");
       return;
     }
@@ -123,7 +121,7 @@ const Quiz = () => {
         >
           <View className="flex-1 px-6 pb-6 pt-5">
           <View className="mb-8 flex-row items-center justify-between">
-            <Text className="font-bodyBold text-xl text-primaryDark">petfit.</Text>
+            <Text className="font-bodyBold text-xl text-primaryDark">Petfit.</Text>
             <Text className="font-bodyMedium text-sm text-textSecondary">
               Питання {currentQuestionIndex + 1} із {questionCount}
             </Text>

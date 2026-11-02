@@ -16,7 +16,8 @@ export type ValidationErrorCode =
   | "INVALID_OPTION"
   | "INVALID_NUMBER"
   | "INVALID_RANGE"
-  | "INVALID_ANSWER_TYPE";
+  | "INVALID_ANSWER_TYPE"
+  | "UNKNOWN_QUESTION";
 
 export interface ValidationError {
   questionId: string;
@@ -44,7 +45,7 @@ const isValidTimeRange = (range: TimeRange): boolean =>
   Number.isFinite(range.minMinutes) &&
   range.minMinutes >= 0 &&
   (range.maxMinutes === null ||
-    (Number.isFinite(range.maxMinutes) && range.maxMinutes >= range.minMinutes));
+    (Number.isFinite(range.maxMinutes) && range.maxMinutes > range.minMinutes));
 
 export function mapQuizAnswers(answers: QuizAnswers): MappingResult {
   const errors: ValidationError[] = [];
@@ -64,30 +65,65 @@ export function mapQuizAnswers(answers: QuizAnswers): MappingResult {
     message: string,
   ) => errors.push({ questionId, code, message });
 
+  const knownQuestionIds = new Set(
+    quizQuestions.map((question) => question.id),
+  );
+
+  for (const questionId of Object.keys(answers)) {
+    if (!knownQuestionIds.has(questionId)) {
+      addError(
+        questionId,
+        "UNKNOWN_QUESTION",
+        "Відповідь належить невідомому питанню.",
+      );
+    }
+  }
+
   for (const question of quizQuestions) {
     const rawAnswer: unknown = answers[question.id];
     if (rawAnswer === undefined) continue;
 
     if (!isRecord(rawAnswer) || typeof rawAnswer.type !== "string") {
-      addError(question.id, "INVALID_ANSWER_TYPE", "Відповідь має невідомий формат.");
+      addError(
+        question.id,
+        "INVALID_ANSWER_TYPE",
+        "Відповідь має невідомий формат.",
+      );
       continue;
     }
 
     if (rawAnswer.type === "unknown") {
       if (!question.allowUnknown) {
-        addError(question.id, "INVALID_ANSWER_TYPE", "Для цього питання пропуск не дозволений.");
+        addError(
+          question.id,
+          "INVALID_ANSWER_TYPE",
+          "Для цього питання пропуск не дозволений.",
+        );
       }
       continue;
     }
 
     if (rawAnswer.type === "option") {
-      if (question.answerType !== "single_select" || typeof rawAnswer.value !== "string") {
-        addError(question.id, "INVALID_ANSWER_TYPE", "Очікувався інший тип відповіді.");
+      if (
+        question.answerType !== "single_select" ||
+        typeof rawAnswer.value !== "string"
+      ) {
+        addError(
+          question.id,
+          "INVALID_ANSWER_TYPE",
+          "Очікувався інший тип відповіді.",
+        );
         continue;
       }
 
-      if (!question.options.some((option) => option.value === rawAnswer.value)) {
-        addError(question.id, "INVALID_OPTION", "Вибраний варіант відсутній у питанні.");
+      if (
+        !question.options.some((option) => option.value === rawAnswer.value)
+      ) {
+        addError(
+          question.id,
+          "INVALID_OPTION",
+          "Вибраний варіант відсутній у питанні.",
+        );
         continue;
       }
 
@@ -107,9 +143,17 @@ export function mapQuizAnswers(answers: QuizAnswers): MappingResult {
           };
           const range = ranges[rawAnswer.value];
           if (!range) {
-            addError(question.id, "INVALID_OPTION", "Невідомий варіант часу догляду.");
+            addError(
+              question.id,
+              "INVALID_OPTION",
+              "Невідомий варіант часу догляду.",
+            );
           } else if (!isValidTimeRange(range)) {
-            addError(question.id, "INVALID_RANGE", "Діапазон часу догляду некоректний.");
+            addError(
+              question.id,
+              "INVALID_RANGE",
+              "Діапазон часу догляду некоректний.",
+            );
           } else {
             input.availableCareTime = knownAnswer(range);
           }
@@ -123,7 +167,11 @@ export function mapQuizAnswers(answers: QuizAnswers): MappingResult {
           } else if (rawAnswer.value === "high_interaction") {
             input.desiredInteraction = knownAnswer("high");
           } else {
-            addError(question.id, "INVALID_OPTION", "Невідомий рівень взаємодії.");
+            addError(
+              question.id,
+              "INVALID_OPTION",
+              "Невідомий рівень взаємодії.",
+            );
           }
           break;
         case "monthlyBudget": {
@@ -137,13 +185,25 @@ export function mapQuizAnswers(answers: QuizAnswers): MappingResult {
           if (rawAnswer.value === "not_sure") {
             input.monthlyBudget = unknownAnswer<BudgetValue>();
           } else if (rawAnswer.value === "custom_amount") {
-            addError(question.id, "INVALID_ANSWER_TYPE", "Для власної суми потрібне числове значення.");
+            addError(
+              question.id,
+              "INVALID_ANSWER_TYPE",
+              "Для власної суми потрібне числове значення.",
+            );
           } else {
             const range = ranges[rawAnswer.value];
             if (!range) {
-              addError(question.id, "INVALID_OPTION", "Невідомий варіант бюджету.");
+              addError(
+                question.id,
+                "INVALID_OPTION",
+                "Невідомий варіант бюджету.",
+              );
             } else if (!isValidNumericRange(range)) {
-              addError(question.id, "INVALID_RANGE", "Діапазон бюджету некоректний.");
+              addError(
+                question.id,
+                "INVALID_RANGE",
+                "Діапазон бюджету некоректний.",
+              );
             } else {
               input.monthlyBudget = knownAnswer({ type: "range", range });
             }
@@ -158,7 +218,11 @@ export function mapQuizAnswers(answers: QuizAnswers): MappingResult {
           ) {
             input.dailyAbsence = knownAnswer(rawAnswer.value);
           } else {
-            addError(question.id, "INVALID_OPTION", "Невідомий варіант щоденної відсутності.");
+            addError(
+              question.id,
+              "INVALID_OPTION",
+              "Невідомий варіант щоденної відсутності.",
+            );
           }
           break;
         case "preparationReadiness":
@@ -171,7 +235,11 @@ export function mapQuizAnswers(answers: QuizAnswers): MappingResult {
           } else if (rawAnswer.value === "not_ready_to_prepare") {
             input.preparationReadiness = knownAnswer("not_ready");
           } else {
-            addError(question.id, "INVALID_OPTION", "Невідомий варіант підготовки.");
+            addError(
+              question.id,
+              "INVALID_OPTION",
+              "Невідомий варіант підготовки.",
+            );
           }
           break;
         case "desiredActivity":
@@ -182,11 +250,19 @@ export function mapQuizAnswers(answers: QuizAnswers): MappingResult {
           } else if (rawAnswer.value === "high_activity") {
             input.desiredActivity = knownAnswer("high");
           } else {
-            addError(question.id, "INVALID_OPTION", "Невідомий рівень активності.");
+            addError(
+              question.id,
+              "INVALID_OPTION",
+              "Невідомий рівень активності.",
+            );
           }
           break;
         default:
-          addError(question.id, "INVALID_OPTION", "Питання не має правила нормалізації.");
+          addError(
+            question.id,
+            "INVALID_OPTION",
+            "Питання не має правила нормалізації.",
+          );
       }
 
       continue;
@@ -199,11 +275,15 @@ export function mapQuizAnswers(answers: QuizAnswers): MappingResult {
         !question.options.some((option) => option.value === "custom_amount") ||
         typeof rawAnswer.value !== "number"
       ) {
-        addError(question.id, "INVALID_ANSWER_TYPE", "Очікувався інший тип відповіді.");
+        addError(
+          question.id,
+          "INVALID_ANSWER_TYPE",
+          "Очікувався інший тип відповіді.",
+        );
         continue;
       }
       if (
-        !Number.isFinite(rawAnswer.value) ||
+        !Number.isSafeInteger(rawAnswer.value) ||
         rawAnswer.value < question.customInput.min
       ) {
         addError(
@@ -214,11 +294,18 @@ export function mapQuizAnswers(answers: QuizAnswers): MappingResult {
         continue;
       }
 
-      input.monthlyBudget = knownAnswer({ type: "custom", amount: rawAnswer.value });
+      input.monthlyBudget = knownAnswer({
+        type: "custom",
+        amount: rawAnswer.value,
+      });
       continue;
     }
 
-    addError(question.id, "INVALID_ANSWER_TYPE", "Тип відповіді не підтримується.");
+    addError(
+      question.id,
+      "INVALID_ANSWER_TYPE",
+      "Тип відповіді не підтримується.",
+    );
   }
 
   return errors.length > 0

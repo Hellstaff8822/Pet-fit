@@ -8,7 +8,7 @@ type PetImagePlaceholderProps = {
 
 export function PetImagePlaceholder({
   height = 240,
-  label = "Pet photo coming soon",
+  label = "Фото улюбленця незабаром",
 }: PetImagePlaceholderProps) {
   return (
     <View

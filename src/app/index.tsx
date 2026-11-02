@@ -18,19 +18,18 @@ export default function HomeScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="flex-1 px-6 pb-8 pt-6">
           <View className="mb-8">
-            <Text className="text-4xl font-bold text-primaryDark">petfit.</Text>
+            <Text className="text-4xl font-bold text-primaryDark">Petfit.</Text>
           </View>
 
-          <PetImagePlaceholder height={270} label="Pet photo coming soon" />
+          <PetImagePlaceholder height={270} label="Фото улюбленця незабаром" />
 
           <View className="mt-8">
             <Text className="text-[40px] leading-[46px] font-display text-text">
-              Different lives.{"\n"}Perfect companions.
+              Різні стилі життя.{"\n"}Ідеальні компаньйони.
             </Text>
 
             <Text className="mt-4 font-body text-base leading-6 text-textSecondary">
-              Find the right pet for your lifestyle, space, and everyday
-              routine.
+              Знайди улюбленця, який пасуватиме твоєму способу життя, житлу та щоденному ритму.
             </Text>
           </View>
 
@@ -41,7 +40,7 @@ export default function HomeScreen() {
               className="h-14 items-center justify-center rounded-2xl bg-primary"
             >
               <Text className="font-bodySemibold text-base text-white">
-                Find my match →
+                Підібрати улюбленця →
               </Text>
             </Pressable>
 
@@ -49,14 +48,14 @@ export default function HomeScreen() {
               accessibilityRole="button"
               onPress={() =>
                 Alert.alert(
-                  "Coming later",
-                  "Pet profiles are planned for a future release.",
+                  "Незабаром",
+                  "Профілі домашніх улюбленців з’являться в майбутніх оновленнях.",
                 )
               }
               className="mt-3 h-12 items-center justify-center"
             >
               <Text className="font-semibold text-primaryDark">
-                I already have a pet →
+                У мене вже є улюбленець →
               </Text>
             </Pressable>
           </View>
