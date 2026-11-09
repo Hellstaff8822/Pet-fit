@@ -36,4 +36,5 @@ export interface MatchingInput {
   dailyAbsence: Answer<DailyAbsence>;
   preparationReadiness: Answer<PreparationReadiness>;
   desiredActivity: Answer<CompatibilityLevel>;
+  
 }
