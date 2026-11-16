@@ -5,15 +5,31 @@ export interface NumericRange {
   max: number | null;
 }
 
+
 export interface TimeRange {
   minMinutes: number;
   maxMinutes: number | null;
 }
 
-export type CompatibilityLevel = "low" | "moderate" | "high";
+export interface AreaRange {
+  minSquareMeters: number;
+  maxSquareMeters: number | null;
+}
+
+export interface VolumeRange {
+  minLiters: number;
+  maxLiters: number | null;
+}
+
+export type NeedLevel = "low" | "moderate" | "high";
+export type PreferenceLevel = "low" | "moderate" | "high";
+
+
 export type HousingType = "apartment" | "house";
+
 export type DailyAbsence =
   "rarely_away" | "several_hours_daily" | "away_most_of_day";
+
 export type PreparationReadiness =
   "ready" | "needs_guidance" | "unsure" | "not_ready";
 
@@ -23,11 +39,11 @@ export type BudgetValue =
 export interface MatchingInput {
   housingType: Answer<HousingType>;
   availableCareTime: Answer<TimeRange>;
-  desiredInteraction: Answer<CompatibilityLevel>;
+  desiredInteraction: Answer<PreferenceLevel>;
   monthlyBudget: Answer<BudgetValue>;
   dailyAbsence: Answer<DailyAbsence>;
   preparationReadiness: Answer<PreparationReadiness>;
-  desiredActivity: Answer<CompatibilityLevel>;
+  desiredActivity: Answer<PreferenceLevel>;
 }
 
 export type PetSpecies =
@@ -39,8 +55,8 @@ export interface PetProfileBase {
 
   needs: {
     dailyCareTime: TimeRange;
-    interaction: CompatibilityLevel;
-    activity: CompatibilityLevel;
+    interaction: NeedLevel;
+    activity: NeedLevel;
   };
 
   requirements: {
@@ -57,61 +73,62 @@ export interface PetProfileBase {
 
 export interface CatProfile extends PetProfileBase {
   species: "cat";
-
   details: {
     indoorAdaptation: boolean;
-    groomingLevel: CompatibilityLevel;
+    groomingLevel: NeedLevel;
   };
+  
 }
 
 export interface DogProfile extends PetProfileBase {
   species: "dog";
-
   details: {
     walksPerDay: number;
-    trainingNeeds: CompatibilityLevel;
-    socializationNeeds: CompatibilityLevel;
+    trainingNeeds: NeedLevel;
+    socializationNeeds: NeedLevel;
   };
 }
 
 export interface RabbitProfile extends PetProfileBase {
   species: "rabbit";
-
   details: {
-    socialNeeds: CompatibilityLevel;
-    enclosureSpace: NumericRange;
-    chewingNeeds: CompatibilityLevel;
+    socialNeeds: NeedLevel;
+    enclosureSpace: AreaRange;
+    chewingNeeds: NeedLevel;
   };
 }
 
 export interface HamsterProfile extends PetProfileBase {
   species: "hamster";
-
   details: {
-    nocturnalActivity: CompatibilityLevel;
-    enclosureSpace: NumericRange;
-    burrowingNeeds: CompatibilityLevel;
+    nocturnalActivity: NeedLevel;
+    enclosureSpace: AreaRange;
+    burrowingNeeds: NeedLevel;
   };
 }
 
 export interface FreshwaterFishProfile extends PetProfileBase {
   species: "freshwater_fish";
-
   details: {
-    aquariumVolume: NumericRange;
-    waterMaintenance: CompatibilityLevel;
-    equipmentNeeds: CompatibilityLevel;
+    aquariumVolume: VolumeRange;
+    waterMaintenance: NeedLevel;
+    equipmentNeeds: NeedLevel;
   };
 }
 
 export interface BudgerigarProfile extends PetProfileBase {
   species: "budgerigar";
-
   details: {
-    flightNeeds: CompatibilityLevel;
-    vocalizationLevel: CompatibilityLevel;
-    socialNeeds: CompatibilityLevel;
+    flightNeeds: NeedLevel;
+    vocalizationLevel: NeedLevel;
+    socialNeeds: NeedLevel;
   };
 }
 
-export type PetProfile = CatProfile | DogProfile | RabbitProfile | HamsterProfile | FreshwaterFishProfile | BudgerigarProfile;
+export type PetProfile =
+  | CatProfile
+  | DogProfile
+  | RabbitProfile
+  | HamsterProfile
+  | FreshwaterFishProfile
+  | BudgerigarProfile;

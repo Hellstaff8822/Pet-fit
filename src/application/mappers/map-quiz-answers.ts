@@ -3,13 +3,14 @@ import type { QuizAnswers } from "@/types/quiz";
 import type {
   Answer,
   BudgetValue,
-  CompatibilityLevel,
   DailyAbsence,
   HousingType,
   MatchingInput,
   NumericRange,
   PreparationReadiness,
   TimeRange,
+  PreferenceLevel,
+  NeedLevel
 } from "@/domain/types/matching";
 
 export type ValidationErrorCode =
@@ -52,11 +53,11 @@ export function mapQuizAnswers(answers: QuizAnswers): MappingResult {
   const input: MatchingInput = {
     housingType: unknownAnswer<HousingType>(),
     availableCareTime: unknownAnswer<TimeRange>(),
-    desiredInteraction: unknownAnswer<CompatibilityLevel>(),
+    desiredInteraction: unknownAnswer<PreferenceLevel>(),
     monthlyBudget: unknownAnswer<BudgetValue>(),
     dailyAbsence: unknownAnswer<DailyAbsence>(),
     preparationReadiness: unknownAnswer<PreparationReadiness>(),
-    desiredActivity: unknownAnswer<CompatibilityLevel>(),
+    desiredActivity: unknownAnswer<PreferenceLevel>(),
   };
 
   const addError = (
