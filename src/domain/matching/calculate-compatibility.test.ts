@@ -8,7 +8,8 @@ import {
   isCareTimeCompatible,
   isInteractionCompatible,
   isActivityCompatible,
-  isBudgetCompatible
+  isBudgetCompatible,
+  calculateCompatibilityScore
 } from "./calculate-compatibility";
 
 describe("isHousingCompatible", () => {
@@ -412,5 +413,122 @@ describe("isBudgetCompatible", () => {
         },
       ),
     ).toBe("partial");
+  });
+});
+
+
+
+describe("calculateCompatibilityScore", () => {
+  it("returns 100 when all criteria are fully compatible", () => {
+    const result = calculateCompatibilityScore({
+      careTime: "full",
+      budget: "full",
+      interaction: "full",
+      activity: "full",
+    });
+
+    expect(result).toEqual({
+      score: 100,
+      completeness: 100,
+      evaluatedCriteria: 4,
+      totalCriteria: 4,
+    });
+  });
+
+  it("returns 50 when all criteria are partially compatible", () => {
+    const result = calculateCompatibilityScore({
+      careTime: "partial",
+      budget: "partial",
+      interaction: "partial",
+      activity: "partial",
+    });
+
+    expect(result.score).toBe(50);
+  });
+
+  it("returns 0 when all criteria are insufficient", () => {
+    const result = calculateCompatibilityScore({
+      careTime: "insufficient",
+      budget: "insufficient",
+      interaction: "insufficient",
+      activity: "insufficient",
+    });
+
+    expect(result.score).toBe(0);
+  });
+
+  it("calculates score using different criterion weights", () => {
+    const result = calculateCompatibilityScore({
+      careTime: "full",
+      budget: "partial",
+      interaction: "full",
+      activity: "unknown",
+    });
+
+    expect(result).toEqual({
+      score: 81,
+      completeness: 80,
+      evaluatedCriteria: 3,
+      totalCriteria: 4,
+    });
+  });
+
+  it("does not include unknown criteria in the score", () => {
+    const result = calculateCompatibilityScore({
+      careTime: "full",
+      budget: "unknown",
+      interaction: "unknown",
+      activity: "unknown",
+    });
+
+    expect(result).toEqual({
+      score: 100,
+      completeness: 30,
+      evaluatedCriteria: 1,
+      totalCriteria: 4,
+    });
+  });
+
+  it("returns null score when all criteria are unknown", () => {
+    const result = calculateCompatibilityScore({
+      careTime: "unknown",
+      budget: "unknown",
+      interaction: "unknown",
+      activity: "unknown",
+    });
+
+    expect(result).toEqual({
+      score: null,
+      completeness: 0,
+      evaluatedCriteria: 0,
+      totalCriteria: 4,
+    });
+  });
+
+  it("calculates score correctly when only budget and care time are known", () => {
+    const result = calculateCompatibilityScore({
+      careTime: "full",
+      budget: "insufficient",
+      interaction: "unknown",
+      activity: "unknown",
+    });
+
+    expect(result).toEqual({
+      score: 50,
+      completeness: 60,
+      evaluatedCriteria: 2,
+      totalCriteria: 4,
+    });
+  });
+
+  it("rounds the calculated score to the nearest integer", () => {
+    const result = calculateCompatibilityScore({
+      careTime: "full",
+      budget: "partial",
+      interaction: "partial",
+      activity: "unknown",
+    });
+
+    expect(result.score).toBe(69);
   });
 });
