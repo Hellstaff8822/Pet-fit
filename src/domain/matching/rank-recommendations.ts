@@ -21,6 +21,10 @@ export const rankRecommendations = (
       return statusPriority[a.status] - statusPriority[b.status];
     }
 
+    if (a.score === null && b.score === null) {
+      return 0;
+    }
+
     if (a.score === null) {
       return 1;
     }
