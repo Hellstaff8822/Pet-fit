@@ -1,6 +1,9 @@
 import { useQuizSession } from "@/features/quiz/context/quiz-session-context";
 import { mapQuizAnswers } from "@/application/mappers/map-quiz-answers";
 
+import { animals } from "@/data/animals";
+import { matchPets } from "@/domain/matching/match-pets";
+
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Pressable, Text, View } from "react-native";
@@ -12,18 +15,40 @@ export default function QuizResultsScreen() {
 
   const mappingResult = mapQuizAnswers(answers);
 
+  const matchingResult = mappingResult.success
+    ? {
+        success: true as const,
+        recommendations: matchPets(animals, mappingResult.input),
+      }
+    : {
+        success: false as const,
+        errors: mappingResult.errors,
+      };
+
+ if (matchingResult.success) {
+  console.log(
+    "Pet recommendations:",
+    matchingResult.recommendations.map((recommendation) => ({
+      id: recommendation.pet.id,
+      species: recommendation.pet.species,
+      score: recommendation.score,
+      status: recommendation.status,
+    })),
+  );
+}
+
   const invalidMappingResult = mapQuizAnswers({
-  ...answers,
-  fake_question: {
-    type: "option",
-    value: "some_value",
-  },
-});
+    ...answers,
+    fake_question: {
+      type: "option",
+      value: "some_value",
+    },
+  });
 
-console.log("Invalid mapping test:", invalidMappingResult);
+  // console.log("Invalid mapping test:", invalidMappingResult);
 
-  console.log("Quiz answers:", answers);
-  console.log("Mapping result:", mappingResult);
+  // console.log("Quiz answers:", answers);
+  // console.log("Mapping result:", mappingResult);
 
   return (
     <View

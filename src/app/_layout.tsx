@@ -26,10 +26,10 @@ export default function RootLayout() {
     Inter_600SemiBold,
     Inter_700Bold,
   });
-  console.log("PetFit fonts:", {
-    fontsLoaded,
-    fontError,
-  });
+  // console.log("PetFit fonts:", {
+  //   fontsLoaded,
+  //   fontError,
+  // });
 
   useEffect(() => {
     if (fontsLoaded || fontError) {

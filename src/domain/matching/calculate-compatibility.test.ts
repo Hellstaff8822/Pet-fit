@@ -1,4 +1,3 @@
-
 import { describe, it, expect } from "vitest";
 
 import {
@@ -9,7 +8,7 @@ import {
   isInteractionCompatible,
   isActivityCompatible,
   isBudgetCompatible,
-  calculateCompatibilityScore
+  calculateCompatibilityScore,
 } from "./calculate-compatibility";
 
 describe("isHousingCompatible", () => {
@@ -132,10 +131,7 @@ describe("checkCriticalRequirements", () => {
 
     expect(result).toBe("incompatible");
   });
-
-  
 });
-
 
 describe("isCareTimeCompatible", () => {
   it("returns unknown when user's care time is unknown", () => {
@@ -244,13 +240,13 @@ describe("isInteractionCompatible", () => {
     expect(result).toBe("insufficient");
   });
 
-  it("returns full when user wants moderate interaction and pet needs low interaction", () => {
+  it("returns partial when user wants moderate interaction and pet needs low interaction", () => {
     const result = isInteractionCompatible("low", {
       status: "known",
       value: "moderate",
     });
 
-    expect(result).toBe("full");
+    expect(result).toBe("partial");
   });
 
   it("returns full when user and pet both have moderate interaction level", () => {
@@ -271,22 +267,22 @@ describe("isInteractionCompatible", () => {
     expect(result).toBe("partial");
   });
 
-  it("returns partial when user wants high interaction but pet needs low interaction", () => {
+  it("returns insufficient when user wants high interaction but pet needs low interaction", () => {
     const result = isInteractionCompatible("low", {
       status: "known",
       value: "high",
     });
 
-    expect(result).toBe("partial");
+    expect(result).toBe("insufficient");
   });
 
-  it("returns full when user wants high interaction and pet needs moderate interaction", () => {
+  it("returns partial when user wants high interaction and pet needs moderate interaction", () => {
     const result = isInteractionCompatible("moderate", {
       status: "known",
       value: "high",
     });
 
-    expect(result).toBe("full");
+    expect(result).toBe("partial");
   });
 
   it("returns full when user and pet both have high interaction level", () => {
@@ -310,11 +306,11 @@ describe("isActivityCompatible", () => {
     ["low", "low", "full"],
     ["low", "moderate", "partial"],
     ["low", "high", "insufficient"],
-    ["moderate", "low", "full"],
+    ["moderate", "low", "partial"],
     ["moderate", "moderate", "full"],
     ["moderate", "high", "partial"],
-    ["high", "low", "partial"],
-    ["high", "moderate", "full"],
+    ["high", "low", "insufficient"],
+    ["high", "moderate", "partial"],
     ["high", "high", "full"],
   ] as const)(
     "user preference %s and pet activity %s should return %s",
@@ -328,6 +324,7 @@ describe("isActivityCompatible", () => {
     },
   );
 });
+
 describe("isBudgetCompatible", () => {
   const monthlyCosts = {
     min: 2000,
@@ -415,8 +412,6 @@ describe("isBudgetCompatible", () => {
     ).toBe("partial");
   });
 });
-
-
 
 describe("calculateCompatibilityScore", () => {
   it("returns 100 when all criteria are fully compatible", () => {

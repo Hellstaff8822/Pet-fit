@@ -58,7 +58,7 @@ export const animals: PetProfile[] = [
     },
 
     requirements: {
-      housing: ["house"],
+      housing: ["apartment", "house"],
       maximumDailyAbsence: "several_hours_daily",
     },
     costs: {

@@ -8,12 +8,7 @@ import type {
   NumericRange,
 } from "@/domain/types/matching";
 
-
-type CriterionResult =
-  | "full"
-  | "partial"
-  | "insufficient"
-  | "unknown";
+type CriterionResult = "full" | "partial" | "insufficient" | "unknown";
 
 interface CompatibilityCriteria {
   careTime: CriterionResult;
@@ -29,25 +24,18 @@ export interface CompatibilityScore {
   totalCriteria: number;
 }
 
-const SCORE_WEIGHTS: Record<
-  keyof CompatibilityCriteria,
-  number
-> = {
+const SCORE_WEIGHTS: Record<keyof CompatibilityCriteria, number> = {
   careTime: 30,
   budget: 30,
   interaction: 20,
   activity: 20,
 };
 
-const RESULT_POINTS: Record<
-  Exclude<CriterionResult, "unknown">,
-  number
-> = {
+const RESULT_POINTS: Record<Exclude<CriterionResult, "unknown">, number> = {
   full: 100,
   partial: 50,
   insufficient: 0,
 };
-
 
 export const isHousingCompatible = (
   allowedHousing: HousingType[],
@@ -148,19 +136,20 @@ export const isInteractionCompatible = (
       high: "insufficient",
     },
     moderate: {
-      low: "full",
+      low: "partial",
       moderate: "full",
       high: "partial",
     },
     high: {
-      low: "partial",
-      moderate: "full",
+      low: "insufficient",
+      moderate: "partial",
       high: "full",
     },
   };
 
   return compatibilityMatrix[userInteraction.value][requiredInteraction];
 };
+
 export const isActivityCompatible = (
   requiredActivity: NeedLevel,
   userActivity: Answer<PreferenceLevel>,
@@ -179,13 +168,13 @@ export const isActivityCompatible = (
       high: "insufficient",
     },
     moderate: {
-      low: "full",
+      low: "partial",
       moderate: "full",
       high: "partial",
     },
     high: {
-      low: "partial",
-      moderate: "full",
+      low: "insufficient",
+      moderate: "partial",
       high: "full",
     },
   };
@@ -220,7 +209,6 @@ export const isBudgetCompatible = (
   return "partial";
 };
 
-
 export const calculateCompatibilityScore = (
   criteria: CompatibilityCriteria,
 ): CompatibilityScore => {
@@ -245,9 +233,7 @@ export const calculateCompatibilityScore = (
   }
 
   const score =
-    evaluatedWeight === 0
-      ? null
-      : Math.round(weightedScore / evaluatedWeight);
+    evaluatedWeight === 0 ? null : Math.round(weightedScore / evaluatedWeight);
 
   return {
     score,
