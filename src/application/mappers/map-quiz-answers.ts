@@ -10,7 +10,6 @@ import type {
   PreparationReadiness,
   TimeRange,
   PreferenceLevel,
-  NeedLevel
 } from "@/domain/types/matching";
 
 export type ValidationErrorCode =

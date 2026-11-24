@@ -1,0 +1,173 @@
+import { describe, it, expect } from "vitest";
+import { matchPets } from "./match-pets";
+import type { MatchingInput, CatProfile } from "../types/matching";
+
+const matchingInput: MatchingInput = {
+  housingType: { status: "known", value: "apartment" },
+  availableCareTime: {
+    status: "known",
+    value: { minMinutes: 60, maxMinutes: 120 },
+  },
+  desiredInteraction: { status: "known", value: "moderate" },
+  monthlyBudget: {
+    status: "known",
+    value: { type: "custom", amount: 3000 },
+  },
+  dailyAbsence: {
+    status: "known",
+    value: "several_hours_daily",
+  },
+  preparationReadiness: { status: "known", value: "ready" },
+  desiredActivity: { status: "known", value: "moderate" },
+};
+
+const compatibleCat: CatProfile = {
+  id: "cat-1",
+  species: "cat",
+  needs: {
+    dailyCareTime: { minMinutes: 30, maxMinutes: 60 },
+    interaction: "moderate",
+    activity: "moderate",
+  },
+  requirements: {
+    housing: ["apartment", "house"],
+    maximumDailyAbsence: "several_hours_daily",
+  },
+  costs: {
+    initialSetup: { min: 3000, max: 6000 },
+    monthly: { min: 1000, max: 2000 },
+    emergencyReserve: { min: 3000, max: 5000 },
+  },
+  details: {
+    indoorAdaptation: true,
+    groomingLevel: "low",
+  },
+};
+
+describe("matchPets", () => {
+  it("should recommend a fully compatible pet", () => {
+    const result = matchPets([compatibleCat], matchingInput);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].pet.id).toBe("cat-1");
+    expect(result[0].status).toBe("recommended");
+    expect(result[0].score).toBe(100);
+  });
+
+  it("should exclude a pet when housing is incompatible", () => {
+    const houseOnlyCat: CatProfile = {
+      ...compatibleCat,
+      requirements: {
+        housing: ["house"],
+        maximumDailyAbsence: "several_hours_daily",
+      },
+    };
+
+    const result = matchPets([houseOnlyCat], matchingInput);
+
+    expect(result[0].status).toBe("excluded");
+    expect(result[0].score).toBe(100);
+  });
+
+  it("should return conditional when housing is unknown", () => {
+    const input: MatchingInput = {
+      ...matchingInput,
+      housingType: { status: "unknown" },
+    };
+
+    const result = matchPets([compatibleCat], input);
+
+    expect(result[0].status).toBe("conditional");
+    expect(result[0].score).toBe(100);
+  });
+
+  it("should lower compatibility score when the budget is insufficient", () => {
+    const input: MatchingInput = {
+      ...matchingInput,
+      monthlyBudget: {
+        status: "known",
+        value: { type: "custom", amount: 500 },
+      },
+      desiredInteraction: {
+        status: "known",
+        value: "low",
+      },
+    };
+
+    const result = matchPets([compatibleCat], input);
+
+    expect(result[0].score).toBe(60);
+    expect(result[0].status).toBe("conditional");
+  });
+
+  it("should return conditional with null score when all answers are unknown", () => {
+    const input: MatchingInput = {
+      housingType: { status: "unknown" },
+      availableCareTime: { status: "unknown" },
+      desiredInteraction: { status: "unknown" },
+      monthlyBudget: { status: "unknown" },
+      dailyAbsence: { status: "unknown" },
+      preparationReadiness: { status: "unknown" },
+      desiredActivity: { status: "unknown" },
+    };
+
+    const result = matchPets([compatibleCat], input);
+
+    expect(result[0].status).toBe("conditional");
+    expect(result[0].score).toBeNull();
+  });
+
+  it("should sort pets by recommendation status and score", () => {
+    const recommendedCat: CatProfile = {
+      ...compatibleCat,
+      id: "cat-2",
+      needs: {
+        ...compatibleCat.needs,
+        interaction: "high",
+      },
+    };
+
+    const conditionalCat: CatProfile = {
+      ...compatibleCat,
+      id: "cat-3",
+      needs: {
+        ...compatibleCat.needs,
+        interaction: "high",
+      },
+      costs: {
+        ...compatibleCat.costs,
+        monthly: { min: 4000, max: 5000 },
+      },
+    };
+
+    const excludedCat: CatProfile = {
+      ...compatibleCat,
+      id: "cat-4",
+      requirements: {
+        housing: ["house"],
+        maximumDailyAbsence: "several_hours_daily",
+      },
+    };
+
+    const result = matchPets(
+      [excludedCat, conditionalCat, recommendedCat, compatibleCat],
+      matchingInput,
+    );
+
+    expect(result.map((item) => item.pet.id)).toEqual([
+      "cat-1",
+      "cat-2",
+      "cat-3",
+      "cat-4",
+    ]);
+
+    expect(result.map((item) => item.status)).toEqual([
+      "recommended",
+      "recommended",
+      "conditional",
+      "excluded",
+    ]);
+
+    expect(result.map((item) => item.score)).toEqual([100, 90, 60, 100]);
+  });
+});
