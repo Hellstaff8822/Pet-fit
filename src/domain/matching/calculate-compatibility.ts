@@ -6,6 +6,7 @@ import type {
   NeedLevel,
   BudgetValue,
   NumericRange,
+  CompanionReadiness,
 } from "@/domain/types/matching";
 
 type CriterionResult = "full" | "partial" | "insufficient" | "unknown";
@@ -92,6 +93,21 @@ export const checkCriticalRequirements = (
   }
 
   return "compatible";
+};
+
+export const checkCompanionRequirement = (
+  companionRequired: boolean,
+  userReadiness: Answer<CompanionReadiness>,
+): "compatible" | "incompatible" | "unknown" => {
+  if (!companionRequired) {
+    return "compatible";
+  }
+
+  if (userReadiness.status === "unknown" || userReadiness.value === "unsure") {
+    return "unknown";
+  }
+
+  return userReadiness.value === "ready" ? "compatible" : "incompatible";
 };
 
 export const isCareTimeCompatible = (

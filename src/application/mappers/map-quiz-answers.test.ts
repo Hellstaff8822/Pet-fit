@@ -1,4 +1,3 @@
-
 import { describe, expect, it } from "vitest";
 import { mapQuizAnswers } from "./map-quiz-answers";
 import type { QuizAnswers } from "@/types/quiz";
@@ -39,6 +38,9 @@ describe("mapQuizAnswers", () => {
             type: "range",
             range: { min: 1500, max: 3000 },
           },
+        },
+        companionReadiness: {
+          status: "unknown",
         },
         dailyAbsence: {
           status: "known",
@@ -298,4 +300,39 @@ describe("mapQuizAnswers", () => {
       );
     }
   });
+});
+
+it.each([
+  ["ready", "ready"],
+  ["not_ready", "not_ready"],
+  ["unsure", "unsure"],
+] as const)("should map companion readiness option: %s", (answer, expected) => {
+  const answers = createValidAnswers();
+  answers.companion = { type: "option", value: answer };
+
+  const result = mapQuizAnswers(answers);
+
+  expect(result.success).toBe(true);
+
+  if (result.success) {
+    expect(result.input.companionReadiness).toEqual({
+      status: "known",
+      value: expected,
+    });
+  }
+});
+
+it("should map unknown companion readiness answer", () => {
+  const answers = createValidAnswers();
+  answers.companion = { type: "unknown" };
+
+  const result = mapQuizAnswers(answers);
+
+  expect(result.success).toBe(true);
+
+  if (result.success) {
+    expect(result.input.companionReadiness).toEqual({
+      status: "unknown",
+    });
+  }
 });

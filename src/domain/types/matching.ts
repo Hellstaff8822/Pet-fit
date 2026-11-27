@@ -31,6 +31,8 @@ export type DailyAbsence =
 export type PreparationReadiness =
   "ready" | "needs_guidance" | "unsure" | "not_ready";
 
+export type CompanionReadiness = "ready" | "not_ready" | "unsure";
+
 export type BudgetValue =
   { type: "range"; range: NumericRange } | { type: "custom"; amount: number };
 
@@ -41,6 +43,7 @@ export interface MatchingInput {
   monthlyBudget: Answer<BudgetValue>;
   dailyAbsence: Answer<DailyAbsence>;
   preparationReadiness: Answer<PreparationReadiness>;
+  companionReadiness: Answer<CompanionReadiness>;
   desiredActivity: Answer<PreferenceLevel>;
 }
 

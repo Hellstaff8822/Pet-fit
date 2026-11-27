@@ -1,7 +1,6 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import { matchPets } from "./match-pets";
 import type { MatchingInput, CatProfile } from "../types/matching";
-
 import { animals } from "@/data/animals";
 
 const matchingInput: MatchingInput = {
@@ -15,6 +14,7 @@ const matchingInput: MatchingInput = {
     status: "known",
     value: { type: "custom", amount: 3000 },
   },
+  companionReadiness: { status: "unknown" },
   dailyAbsence: {
     status: "known",
     value: "several_hours_daily",
@@ -34,6 +34,8 @@ const compatibleCat: CatProfile = {
   requirements: {
     housing: ["apartment", "house"],
     maximumDailyAbsence: "several_hours_daily",
+    companion: null,
+    environment: [],
   },
   costs: {
     initialSetup: { min: 3000, max: 6000 },
@@ -62,6 +64,8 @@ describe("matchPets", () => {
       requirements: {
         housing: ["house"],
         maximumDailyAbsence: "several_hours_daily",
+        companion: null,
+        environment: [],
       },
     };
 
@@ -108,6 +112,7 @@ describe("matchPets", () => {
       availableCareTime: { status: "unknown" },
       desiredInteraction: { status: "unknown" },
       monthlyBudget: { status: "unknown" },
+      companionReadiness: { status: "unknown" },
       dailyAbsence: { status: "unknown" },
       preparationReadiness: { status: "unknown" },
       desiredActivity: { status: "unknown" },
@@ -148,6 +153,8 @@ describe("matchPets", () => {
       requirements: {
         housing: ["house"],
         maximumDailyAbsence: "several_hours_daily",
+        companion: null,
+        environment: [],
       },
     };
 
@@ -174,7 +181,6 @@ describe("matchPets", () => {
   });
 });
 
-
 describe("PetFit user scenarios", () => {
   it("should recommend suitable pets for a calm user with a low budget", () => {
     const calmUser: MatchingInput = {
@@ -182,7 +188,6 @@ describe("PetFit user scenarios", () => {
         status: "known",
         value: "apartment",
       },
-
       availableCareTime: {
         status: "known",
         value: {
@@ -190,12 +195,10 @@ describe("PetFit user scenarios", () => {
           maxMinutes: 30,
         },
       },
-
       desiredInteraction: {
         status: "known",
         value: "low",
       },
-
       monthlyBudget: {
         status: "known",
         value: {
@@ -206,17 +209,15 @@ describe("PetFit user scenarios", () => {
           },
         },
       },
-
+      companionReadiness: { status: "unknown" },
       dailyAbsence: {
         status: "known",
         value: "away_most_of_day",
       },
-
       preparationReadiness: {
         status: "known",
         value: "ready",
       },
-
       desiredActivity: {
         status: "known",
         value: "low",
@@ -264,179 +265,284 @@ describe("PetFit user scenarios", () => {
       },
     ]);
   });
-});
 
-it("should recommend active pets for an active user with a high budget", () => {
-  const activeUser: MatchingInput = {
-    housingType: {
-      status: "known",
-      value: "house",
-    },
-    availableCareTime: {
-      status: "known",
-      value: {
-        minMinutes: 120,
-        maxMinutes: null,
+  it("should recommend active pets for an active user with a high budget", () => {
+    const activeUser: MatchingInput = {
+      housingType: {
+        status: "known",
+        value: "house",
       },
-    },
-    desiredInteraction: {
-      status: "known",
-      value: "high",
-    },
-    monthlyBudget: {
-      status: "known",
-      value: {
-        type: "range",
-        range: {
-          min: 5000,
-          max: null,
+      availableCareTime: {
+        status: "known",
+        value: {
+          minMinutes: 120,
+          maxMinutes: null,
         },
       },
-    },
-    dailyAbsence: {
-      status: "known",
-      value: "rarely_away",
-    },
-    preparationReadiness: {
-      status: "known",
-      value: "ready",
-    },
-    desiredActivity: {
-      status: "known",
-      value: "high",
-    },
-  };
-
-  const result = matchPets(animals, activeUser);
-
-  console.log(
-    "Active user recommendations:",
-    result.map(({ pet, score, status }) => ({
-      id: pet.id,
-      score,
-      status,
-    })),
-  );
-
-  expect(result[0].status).toBe("recommended");
-});
-
-it("should recommend suitable pets for a busy user who is away most of the day", () => {
-  const busyUser: MatchingInput = {
-    housingType: {
-      status: "known",
-      value: "apartment",
-    },
-    availableCareTime: {
-      status: "known",
-      value: {
-        minMinutes: 0,
-        maxMinutes: 30,
+      desiredInteraction: {
+        status: "known",
+        value: "high",
       },
-    },
-    desiredInteraction: {
-      status: "known",
-      value: "low",
-    },
-    monthlyBudget: {
-      status: "known",
-      value: {
-        type: "range",
-        range: {
-          min: 1500,
-          max: 3000,
+      monthlyBudget: {
+        status: "known",
+        value: {
+          type: "range",
+          range: {
+            min: 5000,
+            max: null,
+          },
         },
       },
-    },
-    dailyAbsence: {
-      status: "known",
-      value: "away_most_of_day",
-    },
-    preparationReadiness: {
-      status: "known",
-      value: "ready",
-    },
-    desiredActivity: {
-      status: "known",
-      value: "low",
-    },
-  };
-
-  const result = matchPets(animals, busyUser);
-
-  console.log(
-    "Busy user recommendations:",
-    result.map(({ pet, score, status }) => ({
-      id: pet.id,
-      score,
-      status,
-    })),
-  );
-
-  expect(
-    result
-      .filter(({ status }) => status === "excluded")
-      .map(({ pet }) => pet.id),
-  ).toEqual(
-    expect.arrayContaining([
-      "domestic-dog",
-      "domestic-rabbit",
-      "budgerigar",
-    ]),
-  );
-});
-
-it("should recommend social pets for a highly interactive user", () => {
-  const socialUser: MatchingInput = {
-    housingType: {
-      status: "known",
-      value: "apartment",
-    },
-    availableCareTime: {
-      status: "known",
-      value: {
-        minMinutes: 120,
-        maxMinutes: null,
+      companionReadiness: { status: "unknown" },
+      dailyAbsence: {
+        status: "known",
+        value: "rarely_away",
       },
-    },
-    desiredInteraction: {
-      status: "known",
-      value: "high",
-    },
-    monthlyBudget: {
-      status: "known",
-      value: {
-        type: "range",
-        range: {
-          min: 5000,
-          max: null,
+      preparationReadiness: {
+        status: "known",
+        value: "ready",
+      },
+      desiredActivity: {
+        status: "known",
+        value: "high",
+      },
+    };
+
+    const result = matchPets(animals, activeUser);
+
+    expect(result.length).toBeGreaterThan(0);
+    expect(result[0].status).toBe("recommended");
+  });
+
+  it("should recommend suitable pets for a busy user who is away most of the day", () => {
+    const busyUser: MatchingInput = {
+      housingType: {
+        status: "known",
+        value: "apartment",
+      },
+      availableCareTime: {
+        status: "known",
+        value: {
+          minMinutes: 0,
+          maxMinutes: 30,
         },
       },
-    },
-    dailyAbsence: {
-      status: "known",
-      value: "rarely_away",
-    },
-    preparationReadiness: {
-      status: "known",
-      value: "ready",
-    },
-    desiredActivity: {
-      status: "known",
-      value: "high",
-    },
-  };
+      desiredInteraction: {
+        status: "known",
+        value: "low",
+      },
+      monthlyBudget: {
+        status: "known",
+        value: {
+          type: "range",
+          range: {
+            min: 1500,
+            max: 3000,
+          },
+        },
+      },
+      companionReadiness: { status: "unknown" },
+      dailyAbsence: {
+        status: "known",
+        value: "away_most_of_day",
+      },
+      preparationReadiness: {
+        status: "known",
+        value: "ready",
+      },
+      desiredActivity: {
+        status: "known",
+        value: "low",
+      },
+    };
 
-  const result = matchPets(animals, socialUser);
+    const result = matchPets(animals, busyUser);
 
-  console.log(
-    "Social user recommendations:",
-    result.map(({ pet, score, status }) => ({
-      id: pet.id,
-      score,
-      status,
-    })),
-  );
+    expect(
+      result
+        .filter(({ status }) => status === "excluded")
+        .map(({ pet }) => pet.id),
+    ).toEqual(
+      expect.arrayContaining(["domestic-dog", "domestic-rabbit", "budgerigar"]),
+    );
+  });
 
-  expect(result[0].status).toBe("recommended");
+  it("should recommend social pets for a highly interactive user", () => {
+    const socialUser: MatchingInput = {
+      housingType: {
+        status: "known",
+        value: "apartment",
+      },
+      availableCareTime: {
+        status: "known",
+        value: {
+          minMinutes: 120,
+          maxMinutes: null,
+        },
+      },
+      desiredInteraction: {
+        status: "known",
+        value: "high",
+      },
+      monthlyBudget: {
+        status: "known",
+        value: {
+          type: "range",
+          range: {
+            min: 5000,
+            max: null,
+          },
+        },
+      },
+      companionReadiness: { status: "unknown" },
+      dailyAbsence: {
+        status: "known",
+        value: "rarely_away",
+      },
+      preparationReadiness: {
+        status: "known",
+        value: "ready",
+      },
+      desiredActivity: {
+        status: "known",
+        value: "high",
+      },
+    };
+
+    const result = matchPets(animals, socialUser);
+
+    expect(result.length).toBeGreaterThan(0);
+    expect(result[0].status).toBe("recommended");
+  });
+});
+
+describe("matchPets additional requirements", () => {
+  it("should exclude a pet when daily absence is incompatible", () => {
+    const input: MatchingInput = {
+      ...matchingInput,
+      dailyAbsence: {
+        status: "known",
+        value: "away_most_of_day",
+      },
+    };
+
+    const result = matchPets([compatibleCat], input);
+
+    expect(result[0].status).toBe("excluded");
+  });
+
+  it("should return conditional when daily absence is unknown", () => {
+    const input: MatchingInput = {
+      ...matchingInput,
+      dailyAbsence: { status: "unknown" },
+    };
+
+    const result = matchPets([compatibleCat], input);
+
+    expect(result[0].status).toBe("conditional");
+  });
+
+  it("should not exclude a pet when the user is ready to provide a companion", () => {
+    const socialCat: CatProfile = {
+      ...compatibleCat,
+      requirements: {
+        ...compatibleCat.requirements,
+        companion: {
+          required: true,
+          description: "Needs another cat",
+        },
+      },
+    };
+
+    const input: MatchingInput = {
+      ...matchingInput,
+      companionReadiness: {
+        status: "known",
+        value: "ready",
+      },
+    };
+
+    const result = matchPets([socialCat], input);
+
+    expect(result[0].status).toBe("recommended");
+  });
+
+  it("should exclude a pet when the user is not ready to provide a required companion", () => {
+    const socialCat: CatProfile = {
+      ...compatibleCat,
+      requirements: {
+        ...compatibleCat.requirements,
+        companion: {
+          required: true,
+          description: "Needs another cat",
+        },
+      },
+    };
+
+    const input: MatchingInput = {
+      ...matchingInput,
+      companionReadiness: {
+        status: "known",
+        value: "not_ready",
+      },
+    };
+
+    const result = matchPets([socialCat], input);
+
+    expect(result[0].status).toBe("excluded");
+  });
+
+  it("should return conditional when companion readiness is unsure", () => {
+    const socialCat: CatProfile = {
+      ...compatibleCat,
+      requirements: {
+        ...compatibleCat.requirements,
+        companion: {
+          required: true,
+          description: "Needs another cat",
+        },
+      },
+    };
+
+    const input: MatchingInput = {
+      ...matchingInput,
+      companionReadiness: {
+        status: "known",
+        value: "unsure",
+      },
+    };
+
+    const result = matchPets([socialCat], input);
+
+    expect(result[0].status).toBe("conditional");
+  });
+
+  it("should exclude a pet when one critical requirement is incompatible even if another is unknown", () => {
+    const input: MatchingInput = {
+      ...matchingInput,
+      housingType: { status: "unknown" },
+      dailyAbsence: {
+        status: "known",
+        value: "away_most_of_day",
+      },
+    };
+
+    const result = matchPets([compatibleCat], input);
+
+    expect(result[0].status).toBe("excluded");
+  });
+
+  it("should keep a pet with no companion requirement compatible", () => {
+    const input: MatchingInput = {
+      ...matchingInput,
+      companionReadiness: {
+        status: "known",
+        value: "not_ready",
+      },
+    };
+
+    const result = matchPets([compatibleCat], input);
+
+    expect(result[0].status).toBe("recommended");
+  });
 });

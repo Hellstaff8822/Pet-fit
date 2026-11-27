@@ -149,4 +149,27 @@ export const quizQuestions: QuizQuestion[] = [
       },
     ],
   },
+
+  {
+    id: "companion",
+    criterionId: "companionReadiness",
+    question:
+      "Чи готовий ти утримувати двох тварин, якщо для їхнього благополуччя потрібен компаньйон?",
+    answerType: "single_select",
+    allowUnknown: true,
+    options: [
+      {
+        label: "Так, готовий утримувати двох тварин",
+        value: "ready",
+      },
+      {
+        label: "Ні, хочу одну тварину",
+        value: "not_ready",
+      },
+      {
+        label: "Поки не впевнений",
+        value: "unsure",
+      },
+    ],
+  },
 ];

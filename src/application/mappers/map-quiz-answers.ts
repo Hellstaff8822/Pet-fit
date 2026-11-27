@@ -10,6 +10,7 @@ import type {
   PreparationReadiness,
   TimeRange,
   PreferenceLevel,
+  CompanionReadiness,
 } from "@/domain/types/matching";
 
 export type ValidationErrorCode =
@@ -57,6 +58,7 @@ export function mapQuizAnswers(answers: QuizAnswers): MappingResult {
     dailyAbsence: unknownAnswer<DailyAbsence>(),
     preparationReadiness: unknownAnswer<PreparationReadiness>(),
     desiredActivity: unknownAnswer<PreferenceLevel>(),
+    companionReadiness: unknownAnswer<CompanionReadiness>(),
   };
 
   const addError = (
@@ -239,6 +241,22 @@ export function mapQuizAnswers(answers: QuizAnswers): MappingResult {
               question.id,
               "INVALID_OPTION",
               "Невідомий варіант підготовки.",
+            );
+          }
+          break;
+
+        case "companionReadiness":
+          if (rawAnswer.value === "ready") {
+            input.companionReadiness = knownAnswer("ready");
+          } else if (rawAnswer.value === "not_ready") {
+            input.companionReadiness = knownAnswer("not_ready");
+          } else if (rawAnswer.value === "unsure") {
+            input.companionReadiness = knownAnswer("unsure");
+          } else {
+            addError(
+              question.id,
+              "INVALID_OPTION",
+              "Невідомий варіант готовності до утримання пари тварин.",
             );
           }
           break;

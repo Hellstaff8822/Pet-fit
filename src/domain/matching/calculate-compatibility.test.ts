@@ -297,9 +297,7 @@ describe("isInteractionCompatible", () => {
 
 describe("isActivityCompatible", () => {
   it("should return unknown when user activity is unknown", () => {
-    expect(
-      isActivityCompatible("high", { status: "unknown" }),
-    ).toBe("unknown");
+    expect(isActivityCompatible("high", { status: "unknown" })).toBe("unknown");
   });
 
   it.each([
@@ -332,9 +330,9 @@ describe("isBudgetCompatible", () => {
   };
 
   it("returns unknown when user's budget is unknown", () => {
-    expect(
-      isBudgetCompatible(monthlyCosts, { status: "unknown" }),
-    ).toBe("unknown");
+    expect(isBudgetCompatible(monthlyCosts, { status: "unknown" })).toBe(
+      "unknown",
+    );
   });
 
   it("returns insufficient when maximum budget is below minimum costs", () => {
@@ -373,6 +371,15 @@ describe("isBudgetCompatible", () => {
     ).toBe("partial");
   });
 
+  it("returns partial when custom budget equals minimum costs", () => {
+    expect(
+      isBudgetCompatible(monthlyCosts, {
+        status: "known",
+        value: { type: "custom", amount: 2000 },
+      }),
+    ).toBe("partial");
+  });
+
   it("returns full when custom budget covers maximum costs", () => {
     expect(
       isBudgetCompatible(monthlyCosts, {
@@ -391,7 +398,7 @@ describe("isBudgetCompatible", () => {
     ).toBe("insufficient");
   });
 
-  it("returns partial when custom budget covers only minimum costs", () => {
+  it("returns partial when custom budget is between minimum and maximum costs", () => {
     expect(
       isBudgetCompatible(monthlyCosts, {
         status: "known",

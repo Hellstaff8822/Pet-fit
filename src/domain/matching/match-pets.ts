@@ -6,6 +6,7 @@ import {
   isActivityCompatible,
   isBudgetCompatible,
   calculateCompatibilityScore,
+  checkCompanionRequirement,
 } from "./calculate-compatibility";
 import { getRecommendationStatus } from "./recommendation";
 import {
@@ -24,6 +25,18 @@ export const matchPets = (
       matchingInput.housingType,
       matchingInput.dailyAbsence,
     );
+
+    const companionResult = checkCompanionRequirement(
+      pet.requirements.companion?.required ?? false,
+      matchingInput.companionReadiness,
+    );
+
+    const combinedCriticalResult =
+      criticalResult === "incompatible" || companionResult === "incompatible"
+        ? "incompatible"
+        : criticalResult === "unknown" || companionResult === "unknown"
+          ? "unknown"
+          : "compatible";
 
     const careTimeResult = isCareTimeCompatible(
       pet.needs.dailyCareTime,
@@ -52,7 +65,10 @@ export const matchPets = (
       activity: activityResult,
     });
 
-    const status = getRecommendationStatus(criticalResult, compatibilityScore);
+    const status = getRecommendationStatus(
+      combinedCriticalResult,
+      compatibilityScore,
+    );
 
     return {
       pet,

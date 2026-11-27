@@ -1,3 +1,4 @@
+
 import type { PetProfile } from "@/domain/types/matching";
 
 export const animals: PetProfile[] = [
@@ -43,8 +44,8 @@ export const animals: PetProfile[] = [
 
     costs: {
       initialSetup: {
-        min: 3000,
-        max: 7000,
+        min: 3500,
+        max: 6300,
       },
       monthly: {
         min: 2000,
@@ -102,12 +103,12 @@ export const animals: PetProfile[] = [
 
     costs: {
       initialSetup: {
-        min: 5000,
-        max: 12000,
+        min: 3000,
+        max: 9000,
       },
       monthly: {
-        min: 3000,
-        max: 6000,
+        min: 3500,
+        max: 5400,
       },
       emergencyReserve: {
         min: 10000,
@@ -166,12 +167,12 @@ export const animals: PetProfile[] = [
 
     costs: {
       initialSetup: {
-        min: 4000,
-        max: 8000,
+        min: 3800,
+        max: 6800,
       },
       monthly: {
         min: 1500,
-        max: 3000,
+        max: 3200,
       },
       emergencyReserve: {
         min: 5000,
@@ -231,12 +232,12 @@ export const animals: PetProfile[] = [
 
     costs: {
       initialSetup: {
-        min: 3000,
-        max: 6000,
+        min: 4500,
+        max: 8000,
       },
       monthly: {
-        min: 500,
-        max: 1000,
+        min: 250,
+        max: 600,
       },
       emergencyReserve: {
         min: 2000,
@@ -301,12 +302,12 @@ export const animals: PetProfile[] = [
 
     costs: {
       initialSetup: {
-        min: 5000,
-        max: 12000,
+        min: 3000,
+        max: 6000,
       },
       monthly: {
-        min: 500,
-        max: 1500,
+        min: 300,
+        max: 800,
       },
       emergencyReserve: {
         min: 2000,
@@ -366,12 +367,12 @@ export const animals: PetProfile[] = [
 
     costs: {
       initialSetup: {
-        min: 3000,
-        max: 7000,
+        min: 2400,
+        max: 5000,
       },
       monthly: {
-        min: 700,
-        max: 1500,
+        min: 250,
+        max: 650,
       },
       emergencyReserve: {
         min: 3000,
