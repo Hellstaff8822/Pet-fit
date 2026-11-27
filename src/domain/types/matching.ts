@@ -5,7 +5,6 @@ export interface NumericRange {
   max: number | null;
 }
 
-
 export interface TimeRange {
   minMinutes: number;
   maxMinutes: number | null;
@@ -23,7 +22,6 @@ export interface VolumeRange {
 
 export type NeedLevel = "low" | "moderate" | "high";
 export type PreferenceLevel = "low" | "moderate" | "high";
-
 
 export type HousingType = "apartment" | "house";
 
@@ -49,6 +47,18 @@ export interface MatchingInput {
 export type PetSpecies =
   "cat" | "dog" | "rabbit" | "hamster" | "freshwater_fish" | "budgerigar";
 
+export type RequirementLevel = "required" | "recommended";
+
+export interface CompanionRequirement {
+  required: boolean;
+  description: string;
+}
+
+export interface EnvironmentRequirement {
+  level: RequirementLevel;
+  description: string;
+}
+
 export interface PetProfileBase {
   id: string;
   species: PetSpecies;
@@ -62,6 +72,8 @@ export interface PetProfileBase {
   requirements: {
     housing: HousingType[];
     maximumDailyAbsence: DailyAbsence;
+    companion: CompanionRequirement | null;
+    environment: EnvironmentRequirement[];
   };
 
   costs: {
@@ -77,7 +89,6 @@ export interface CatProfile extends PetProfileBase {
     indoorAdaptation: boolean;
     groomingLevel: NeedLevel;
   };
-  
 }
 
 export interface DogProfile extends PetProfileBase {

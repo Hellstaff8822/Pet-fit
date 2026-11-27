@@ -4,6 +4,7 @@ export const animals: PetProfile[] = [
   {
     id: "domestic-cat",
     species: "cat",
+
     details: {
       indoorAdaptation: true,
       groomingLevel: "moderate",
@@ -21,6 +22,23 @@ export const animals: PetProfile[] = [
     requirements: {
       housing: ["apartment", "house"],
       maximumDailyAbsence: "away_most_of_day",
+
+      companion: null,
+
+      environment: [
+        {
+          level: "required",
+          description: "Потрібні місця для відпочинку та укриття",
+        },
+        {
+          level: "required",
+          description: "Потрібна кігтеточка",
+        },
+        {
+          level: "recommended",
+          description: "Бажані вертикальні поверхні та інтерактивні іграшки",
+        },
+      ],
     },
 
     costs: {
@@ -42,6 +60,7 @@ export const animals: PetProfile[] = [
   {
     id: "domestic-dog",
     species: "dog",
+
     details: {
       walksPerDay: 3,
       trainingNeeds: "moderate",
@@ -60,7 +79,27 @@ export const animals: PetProfile[] = [
     requirements: {
       housing: ["apartment", "house"],
       maximumDailyAbsence: "several_hours_daily",
+
+      companion: null,
+
+      environment: [
+        {
+          level: "required",
+          description:
+            "Потрібні регулярні прогулянки та можливість справляти природні потреби",
+        },
+        {
+          level: "required",
+          description: "Потрібні щоденна взаємодія та фізична активність",
+        },
+        {
+          level: "recommended",
+          description:
+            "Бажані ігри, тренування та завдання для розумової активності",
+        },
+      ],
     },
+
     costs: {
       initialSetup: {
         min: 5000,
@@ -80,11 +119,12 @@ export const animals: PetProfile[] = [
   {
     id: "domestic-rabbit",
     species: "rabbit",
+
     details: {
       socialNeeds: "high",
       enclosureSpace: {
-        minSquareMeters: 3,
-        maxSquareMeters: 4,
+        minSquareMeters: 6,
+        maxSquareMeters: null,
       },
       chewingNeeds: "high",
     },
@@ -101,6 +141,27 @@ export const animals: PetProfile[] = [
     requirements: {
       housing: ["apartment", "house"],
       maximumDailyAbsence: "several_hours_daily",
+
+      companion: {
+        required: true,
+        description: "Потрібен сумісний кролик-компаньйон",
+      },
+
+      environment: [
+        {
+          level: "required",
+          description:
+            "Потрібна простора безпечна зона для вільного пересування площею близько 6 м²",
+        },
+        {
+          level: "required",
+          description: "Потрібні безпечні матеріали для гризіння",
+        },
+        {
+          level: "recommended",
+          description: "Бажані укриття, тунелі та іграшки для дослідження",
+        },
+      ],
     },
 
     costs: {
@@ -122,6 +183,7 @@ export const animals: PetProfile[] = [
   {
     id: "syrian-hamster",
     species: "hamster",
+
     details: {
       nocturnalActivity: "high",
       enclosureSpace: {
@@ -143,6 +205,28 @@ export const animals: PetProfile[] = [
     requirements: {
       housing: ["apartment", "house"],
       maximumDailyAbsence: "away_most_of_day",
+
+      companion: null,
+
+      environment: [
+        {
+          level: "required",
+          description: "Потрібне просторе житло з достатньою площею основи",
+        },
+        {
+          level: "required",
+          description: "Потрібен глибокий шар наповнювача для риття",
+        },
+        {
+          level: "required",
+          description: "Потрібне безпечне суцільне колесо для бігу та укриття",
+        },
+        {
+          level: "recommended",
+          description:
+            "Бажані пісочна ванна та різноманітні елементи для дослідження",
+        },
+      ],
     },
 
     costs: {
@@ -164,6 +248,7 @@ export const animals: PetProfile[] = [
   {
     id: "freshwater-aquarium",
     species: "freshwater_fish",
+
     details: {
       aquariumVolume: {
         minLiters: 60,
@@ -185,6 +270,33 @@ export const animals: PetProfile[] = [
     requirements: {
       housing: ["apartment", "house"],
       maximumDailyAbsence: "away_most_of_day",
+
+      companion: null,
+
+      environment: [
+        {
+          level: "required",
+          description:
+            "Потрібен акваріум відповідного об'єму для обраних видів риб",
+        },
+        {
+          level: "required",
+          description: "Потрібні фільтрація та контроль якості води",
+        },
+        {
+          level: "required",
+          description: "Потрібно запустити азотний цикл до заселення риб",
+        },
+        {
+          level: "required",
+          description:
+            "Потрібне обладнання для підтримання температури, відповідної обраним видам",
+        },
+        {
+          level: "recommended",
+          description: "Бажані живі рослини та укриття",
+        },
+      ],
     },
 
     costs: {
@@ -206,6 +318,7 @@ export const animals: PetProfile[] = [
   {
     id: "budgerigar",
     species: "budgerigar",
+
     details: {
       flightNeeds: "high",
       vocalizationLevel: "moderate",
@@ -224,6 +337,31 @@ export const animals: PetProfile[] = [
     requirements: {
       housing: ["apartment", "house"],
       maximumDailyAbsence: "several_hours_daily",
+
+      companion: {
+        required: true,
+        description: "Рекомендовано утримувати сумісну пару хвилястих папуг",
+      },
+
+      environment: [
+        {
+          level: "required",
+          description: "Потрібна простора клітка з можливістю вільно рухатися",
+        },
+        {
+          level: "required",
+          description: "Потрібен щоденний безпечний політ поза кліткою",
+        },
+        {
+          level: "required",
+          description:
+            "Потрібні жердинки різної товщини та місця для відпочинку",
+        },
+        {
+          level: "recommended",
+          description: "Бажані іграшки та предмети для пошуку їжі",
+        },
+      ],
     },
 
     costs: {
