@@ -1,8 +1,4 @@
 import { useQuizSession } from "@/features/quiz/context/quiz-session-context";
-import { mapQuizAnswers } from "@/application/mappers/map-quiz-answers";
-
-import { animals } from "@/data/animals";
-import { matchPets } from "@/domain/matching/match-pets";
 
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -11,44 +7,7 @@ import { Pressable, Text, View } from "react-native";
 export default function QuizResultsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { answers } = useQuizSession();
-
-  const mappingResult = mapQuizAnswers(answers);
-
-  const matchingResult = mappingResult.success
-    ? {
-        success: true as const,
-        recommendations: matchPets(animals, mappingResult.input),
-      }
-    : {
-        success: false as const,
-        errors: mappingResult.errors,
-      };
-
- if (matchingResult.success) {
-  console.log(
-    "Pet recommendations:",
-    matchingResult.recommendations.map((recommendation) => ({
-      id: recommendation.pet.id,
-      species: recommendation.pet.species,
-      score: recommendation.score,
-      status: recommendation.status,
-    })),
-  );
-}
-
-  const invalidMappingResult = mapQuizAnswers({
-    ...answers,
-    fake_question: {
-      type: "option",
-      value: "some_value",
-    },
-  });
-
-  // console.log("Invalid mapping test:", invalidMappingResult);
-
-  // console.log("Quiz answers:", answers);
-  // console.log("Mapping result:", mappingResult);
+  const { resetAnswers } = useQuizSession();
 
   return (
     <View
@@ -73,13 +32,17 @@ export default function QuizResultsScreen() {
       <View>
         <Pressable
           accessibilityRole="button"
-          onPress={() => router.replace("/quiz")}
+          onPress={() => {
+            resetAnswers();
+            router.replace("/quiz");
+          }}
           className="h-14 items-center justify-center rounded-2xl bg-primary"
         >
           <Text className="font-bodySemibold text-base text-white">
             Пройти вікторину ще раз
           </Text>
         </Pressable>
+
         <Pressable
           accessibilityRole="button"
           onPress={() => router.replace("/")}
