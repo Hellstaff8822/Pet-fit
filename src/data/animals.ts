@@ -340,7 +340,7 @@ export const animals: PetProfile[] = [
       maximumDailyAbsence: "several_hours_daily",
 
       companion: {
-        required: true,
+        required: false,
         description: "Рекомендовано утримувати сумісну пару хвилястих папуг",
       },
 

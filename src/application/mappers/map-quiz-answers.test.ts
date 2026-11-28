@@ -336,3 +336,150 @@ it("should map unknown companion readiness answer", () => {
     });
   }
 });
+
+it.each([
+  ["apartment", "apartment"],
+  ["house", "house"],
+] as const)("should map housing option: %s", (answer, expected) => {
+  const answers = createValidAnswers();
+  answers.housing = { type: "option", value: answer };
+
+  const result = mapQuizAnswers(answers);
+
+  expect(result.success).toBe(true);
+
+  if (result.success) {
+    expect(result.input.housingType).toEqual({
+      status: "known",
+      value: expected,
+    });
+  }
+});
+
+it.each([
+  ["under_30_minutes", { minMinutes: 0, maxMinutes: 30 }],
+  ["30_min_to_2_hours", { minMinutes: 30, maxMinutes: 120 }],
+  ["over_2_hours", { minMinutes: 120, maxMinutes: null }],
+] as const)("should map daily care time option: %s", (answer, expected) => {
+  const answers = createValidAnswers();
+  answers.daily_care = { type: "option", value: answer };
+
+  const result = mapQuizAnswers(answers);
+
+  expect(result.success).toBe(true);
+
+  if (result.success) {
+    expect(result.input.availableCareTime).toEqual({
+      status: "known",
+      value: expected,
+    });
+  }
+});
+
+it.each([
+  ["low_interaction", "low"],
+  ["moderate_interaction", "moderate"],
+  ["high_interaction", "high"],
+] as const)("should map desired interaction option: %s", (answer, expected) => {
+  const answers = createValidAnswers();
+  answers.social_interaction = { type: "option", value: answer };
+
+  const result = mapQuizAnswers(answers);
+
+  expect(result.success).toBe(true);
+
+  if (result.success) {
+    expect(result.input.desiredInteraction).toEqual({
+      status: "known",
+      value: expected,
+    });
+  }
+});
+
+it.each([
+  ["under_500", { min: 0, max: 500 }],
+  ["500_to_1500", { min: 500, max: 1500 }],
+  ["1500_to_3000", { min: 1500, max: 3000 }],
+  ["3000_to_5000", { min: 3000, max: 5000 }],
+  ["over_5000", { min: 5000, max: null }],
+] as const)("should map monthly budget range: %s", (answer, expected) => {
+  const answers = createValidAnswers();
+  answers.finance = { type: "option", value: answer };
+
+  const result = mapQuizAnswers(answers);
+
+  expect(result.success).toBe(true);
+
+  if (result.success) {
+    expect(result.input.monthlyBudget).toEqual({
+      status: "known",
+      value: {
+        type: "range",
+        range: expected,
+      },
+    });
+  }
+});
+
+it.each(["rarely_away", "several_hours_daily", "away_most_of_day"] as const)(
+  "should map daily absence option: %s",
+  (answer) => {
+    const answers = createValidAnswers();
+    answers.absence_care = { type: "option", value: answer };
+
+    const result = mapQuizAnswers(answers);
+
+    expect(result.success).toBe(true);
+
+    if (result.success) {
+      expect(result.input.dailyAbsence).toEqual({
+        status: "known",
+        value: answer,
+      });
+    }
+  },
+);
+
+it.each([
+  ["ready_to_prepare", "ready"],
+  ["needs_guidance", "needs_guidance"],
+  ["not_sure", "unsure"],
+  ["not_ready_to_prepare", "not_ready"],
+] as const)(
+  "should map preparation readiness option: %s",
+  (answer, expected) => {
+    const answers = createValidAnswers();
+    answers.preparation = { type: "option", value: answer };
+
+    const result = mapQuizAnswers(answers);
+
+    expect(result.success).toBe(true);
+
+    if (result.success) {
+      expect(result.input.preparationReadiness).toEqual({
+        status: "known",
+        value: expected,
+      });
+    }
+  },
+);
+
+it.each([
+  ["low_activity", "low"],
+  ["moderate_activity", "moderate"],
+  ["high_activity", "high"],
+] as const)("should map desired activity option: %s", (answer, expected) => {
+  const answers = createValidAnswers();
+  answers.activity = { type: "option", value: answer };
+
+  const result = mapQuizAnswers(answers);
+
+  expect(result.success).toBe(true);
+
+  if (result.success) {
+    expect(result.input.desiredActivity).toEqual({
+      status: "known",
+      value: expected,
+    });
+  }
+});
