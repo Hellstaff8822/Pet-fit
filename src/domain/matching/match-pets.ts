@@ -58,12 +58,14 @@ export const matchPets = (
       matchingInput.monthlyBudget,
     );
 
-    const compatibilityScore = calculateCompatibilityScore({
+    const criteria = {
       careTime: careTimeResult,
       budget: budgetResult,
       interaction: interactionResult,
       activity: activityResult,
-    });
+    };
+
+    const compatibilityScore = calculateCompatibilityScore(criteria);
 
     const status = getRecommendationStatus(
       combinedCriticalResult,
@@ -74,6 +76,7 @@ export const matchPets = (
       pet,
       status,
       score: compatibilityScore.score,
+      criteria,
     };
   });
 

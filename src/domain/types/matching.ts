@@ -21,6 +21,8 @@ export interface VolumeRange {
 }
 
 export type NeedLevel = "low" | "moderate" | "high";
+
+export type CriterionResult = "full" | "partial" | "insufficient" | "unknown";
 export type PreferenceLevel = "low" | "moderate" | "high";
 
 export type HousingType = "apartment" | "house";

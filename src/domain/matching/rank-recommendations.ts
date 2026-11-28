@@ -1,10 +1,16 @@
-import type { PetProfile } from "../types/matching";
+import type { CriterionResult, PetProfile } from "../types/matching";
 import type { RecommendationStatus } from "./recommendation";
 
 export type RankedRecommendation = {
   pet: PetProfile;
   status: RecommendationStatus;
   score: number | null;
+  criteria: {
+    careTime: CriterionResult;
+    budget: CriterionResult;
+    interaction: CriterionResult;
+    activity: CriterionResult;
+  };
 };
 
 const statusPriority = {

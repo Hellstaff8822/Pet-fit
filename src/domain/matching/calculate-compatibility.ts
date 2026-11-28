@@ -7,9 +7,8 @@ import type {
   BudgetValue,
   NumericRange,
   CompanionReadiness,
+  CriterionResult
 } from "@/domain/types/matching";
-
-type CriterionResult = "full" | "partial" | "insufficient" | "unknown";
 
 interface CompatibilityCriteria {
   careTime: CriterionResult;

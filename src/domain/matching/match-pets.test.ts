@@ -56,6 +56,29 @@ describe("matchPets", () => {
     expect(result[0].pet.id).toBe("cat-1");
     expect(result[0].status).toBe("recommended");
     expect(result[0].score).toBe(100);
+    expect(result[0].criteria).toEqual({
+      careTime: "full",
+      budget: "full",
+      interaction: "full",
+      activity: "full",
+    });
+  });
+
+  it("should return unknown for criteria with unknown answers", () => {
+    const input: MatchingInput = {
+      ...matchingInput,
+      availableCareTime: { status: "unknown" },
+      monthlyBudget: { status: "unknown" },
+    };
+
+    const result = matchPets([compatibleCat], input);
+
+    expect(result[0].criteria).toEqual({
+      careTime: "unknown",
+      budget: "unknown",
+      interaction: "full",
+      activity: "full",
+    });
   });
 
   it("should exclude a pet when housing is incompatible", () => {
